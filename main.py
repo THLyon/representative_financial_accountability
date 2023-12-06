@@ -15,12 +15,11 @@ username = os.getenv("USERNAME")
 password = os.getenv("PASSWORD")
 user_agent = os.getenv("APP_NAME")
 
-
-reddit = praw.Reddit(client_id = client_id,  
-                     client_secret = client_secret,  
-                      username = username,  
-                     password = password, 
-                     user_agent = user_agent) 
+reddit = praw.Reddit(client_id=client_id,  
+                     client_secret=client_secret,  
+                     username=username,  
+                     password=password, 
+                     user_agent=user_agent) 
 
 subreddit = reddit.subreddit()
 
@@ -32,8 +31,19 @@ def scrape_politician_names(url):
     if response.status_code == 200:
         soup = BeautifulSoup(response.text, 'html.parser')
         
-        # Modify the following line based on the HTML structure of the webpage
-        politician_names = [name.text for name in soup.find_all('div', class_='politician-name')]
+        # Extract politician names from the text content
+        politician_names = []
+
+        for paragraph in soup.find_all('p'):
+            text_content = paragraph.get_text()
+
+            # Extract names using a simple example (replace this with a more robust method)
+            if 'Sen.' in text_content:
+                start_index = text_content.index('Sen.') + len('Sen.')
+                end_index = text_content.index('(')
+                politician_name = text_content[start_index:end_index].strip()
+
+                politician_names.append(politician_name)
         
         return politician_names
     else:
